@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Instrutivo SaaS</title>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<style>
+body {
+  margin:0;
+  font-family:'Segoe UI';
+  display:flex;
+  background:#f4f6f9;
+}
+
+/* SIDEBAR */
+#menu {
+  width:240px;
+  background:#0b2c52;
+  color:white;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  padding:20px;
+}
+
+.logo {
+  text-align:center;
+  margin-bottom:30px;
+}
+
+.logo span {
+  color:#ffd400;
+  font-size:11px;
+}
+
+/* MENU */
+.menu-btn {
+  padding:12px;
+  border-radius:8px;
+  margin-bottom:10px;
+  cursor:pointer;
+}
+.menu-btn:hover {background:#144a85;}
+
+.active {
+  background:#144a85;
+  position:relative;
+}
+.active::before {
+  content:"";
+  position:absolute;
+  left:-20px;
+  width:4px;
+  height:100%;
+  background:#ffd400;
+}
+
+/* MAIN */
+#main {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+header {
+  height:60px;
+  background:white;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 20px;
+  border-bottom:1px solid #ddd;
+}
+
+/* CONTEÚDO */
+#conteudo {
+  display:flex;
+  gap:20px;
+  padding:20px;
+}
+
+.card {
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  flex:2;
+}
+
+.side {
+  width:300px;
+}
+
+.midia-box {
+  background:#0b2c52;
+  color:white;
+  padding:15px;
+  border-radius:10px;
+}
+
+/* BOTÕES */
+.btn {
+  padding:6px 10px;
+  border:none;
+  border-radius:6px;
+  background:#144a85;
+  color:white;
+  cursor:pointer;
+  margin-right:5px;
+}
+
+/* CLIENTES */
+#lista {
+  overflow-y:auto;
+  flex:1;
+  margin-top:10px;
+}
+
+.item {
+  padding:10px;
+  cursor:pointer;
+  border-radius:6px;
+  position:relative;
+}
+.item:hover {background:#144a85;}
+
+.item.active {
+  background:#144a85;
+}
+.item.active::before {
+  content:"";
+  position:absolute;
+  left:-15px;
+  top:10%;
+  height:80%;
+  width:4px;
+  background:#ffd400;
+}
+
+/* TEXTAREA */
+textarea {
+  width:100%;
+  height:300px;
+  margin-top:10px;
+}
+
+/* MIDIA */
+.midia-item {
+  position:relative;
+}
+.midia img {
+  width:100%;
+  margin-top:10px;
+  cursor:pointer;
+}
+
+/* REMOVER */
+.remover {
+  position:absolute;
+  top:5px;
+  right:5px;
+  background:rgba(0,0,0,0.5);
+  color:white;
+  border:none;
+  border-radius:50%;
+  width:20px;
+  height:20px;
+  cursor:pointer;
+  opacity:0;
+  transition:0.2s;
+}
+.midia-item:hover .remover {
+  opacity:1;
+}
+
+/* MODAL */
+#modal {
+  position:fixed;
+  top:0; left:0;
+  width:100%;
+  height:100%;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  background:rgba(0,0,0,0.8);
+}
+#modal img {max-width:90%;}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div id="menu">
+
+  <div class="logo">
+    <h2>MARVEL</h2>
+    <span>TRANSPORTES</span>
+  </div>
+
+  <div class="menu-btn active" onclick="trocarTipo('nacional', this)">
+    Instrutivo Nacional
+  </div>
+
+  <div class="menu-btn" onclick="trocarTipo('comex', this)">
+    Instrutivo Comex
+  </div>
+
+  <hr>
+
+  <input type="text" id="busca" placeholder="Buscar cliente">
+  <input type="file" id="excel">
+  <button class="btn" onclick="novoCliente()">+ Cliente</button>
+
+  <div id="lista"></div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+<header>
+  <h3 id="titulo">Nenhum cliente</h3>
+  <div>
+    <button class="btn" onclick="editarNome()">Editar Nome</button>
+    <button class="btn" onclick="excluir()">Excluir</button>
+  </div>
+</header>
+
+<div id="conteudo">
+
+  <div class="card">
+    <button class="btn" onclick="toggleEdicao()" id="btnEditar">✏️ Editar</button>
+    <button class="btn" onclick="upload()">📎 Mídia</button>
+
+    <textarea id="editor" disabled></textarea>
+    <input type="file" id="fileInput" style="display:none">
+  </div>
+
+  <div class="side">
+    <div class="midia-box">
+      <h3>Mídia</h3>
+      <div id="midias" class="midia"></div>
+    </div>
+  </div>
+
+</div>
+
+</div>
+
+<div id="modal" onclick="fecharModal()"></div>
+
+
+
+
+
+<script>
+
+let banco = JSON.parse(localStorage.getItem("db")) || {
+  nacional:{},
+  comex:{}
+};
+
+let tipoAtual="nacional";
+let atual=null;
+let editando=false;
+
+/* TROCAR ABA */
+function trocarTipo(tipo, el){
+  tipoAtual = tipo;
+  atual = null;
+
+  document.querySelectorAll(".menu-btn").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
+
+  // limpa tela
+  titulo.innerText = "Nenhum cliente";
+  editor.value = "";
+  midias.innerHTML = "";
+
+  carregarLista();
+}
+
+/* LISTA */
+function carregarLista(){
+  lista.innerHTML="";
+
+  Object.keys(banco[tipoAtual])
+  .filter(n=>n.toLowerCase().includes(busca.value.toLowerCase()))
+  .forEach(n=>{
+    let d=document.createElement("div");
+    d.className="item";
+    d.innerText=n;
+    d.onclick=()=>abrir(n);
+    lista.appendChild(d);
+  });
+}
+
+busca.oninput=()=>carregarLista();
+
+/* ABRIR */
+function abrir(n){
+  atual=n;
+  titulo.innerText=n;
+
+  editor.value=banco[tipoAtual][n].passos.join("\n");
+
+  document.querySelectorAll(".item").forEach(i=>i.classList.remove("active"));
+  [...lista.children].forEach(el=>{
+    if(el.innerText===n) el.classList.add("active");
+  });
+
+  carregarMidias();
+}
+
+/* EDITAR */
+function toggleEdicao(){
+  if(!atual) return;
+
+  editando=!editando;
+  editor.disabled=!editando;
+
+  const btn=document.getElementById("btnEditar");
+
+  if(editando){
+    btn.innerText="💾 Salvar";
+  } else {
+    banco[tipoAtual][atual].passos = editor.value.split("\n");
+salvarDB();
+salvarSupabase(
+  atual,
+  tipoAtual,
+  editor.value,
+  banco[tipoAtual][atual].midia
+);
+    btn.innerText="✏️ Editar";
+  }
+}
+
+/* CLIENTE */
+function novoCliente(){
+  let n=prompt("Nome:");
+  if(!n) return;
+
+  banco[tipoAtual][n]={passos:[],midia:[]};
+  salvarDB();
+  carregarLista();
+}
+
+function editarNome(){
+  if(!atual) return;
+
+  let n=prompt("Novo nome:", atual);
+  if(!n) return;
+
+  banco[tipoAtual][n]=banco[tipoAtual][atual];
+  delete banco[tipoAtual][atual];
+
+  atual=n;
+  salvarDB();
+  carregarLista();
+  abrir(n);
+}
+
+function excluir(){
+  if(!confirm("Excluir cliente?")) return;
+
+  delete banco[tipoAtual][atual];
+  salvarDB();
+  carregarLista();
+}
+
+/* MIDIA */
+function upload(){ fileInput.click(); }
+
+fileInput.onchange=async e=>{
+  let f=e.target.files[0];
+ if(!f) return;
+
+  try{
+  let url = await uploadSupabase(f);
+
+  banco[tipoAtual][atual].midia.push(url);
+
+  salvarDB();
+  salvarSupabase(
+    atual,
+    tipoAtual,
+    banco[tipoAtual][atual].passos.join("\n"),
+    banco[tipoAtual][atual].midia
+  );
+
+  carregarMidias();
+
+}catch(e){
+  alert("Erro ao enviar mídia");
+  console.error(e);
+}
+};
+
+function carregarMidias(){
+  midias.innerHTML = "";
+
+  let lista = banco[tipoAtual][atual]?.midia || [];
+
+  lista.forEach((src, i) => {
+
+    if(!src) return;
+
+    let html = "";
+
+    if(src.includes(".mp4")){
+      html = `
+        <video controls style="max-width: 250px;">
+          <source src="${src}" type="video/mp4">
+        </video>
+      `;
+    }else{
+      html = `<img src="${src}" style="max-width:150px;">`;
+    }
+
+    midias.innerHTML += `
+      <div style="margin-bottom:10px;">
+        ${html}
+        <br>
+        <button onclick="removerMidia(${i})">❌ Excluir</button>
+      </div>
+    `;
+  });
+}
+
+function removerMidia(index){
+
+  banco[tipoAtual][atual].midia.splice(index, 1);
+
+  salvarDB();
+
+  salvarSupabase(
+    atual,
+    tipoAtual,
+    banco[tipoAtual][atual].passos.join("\n"),
+    banco[tipoAtual][atual].midia
+  );
+
+  carregarMidias();
+}
+
+
+async function uploadSupabase(file){
+  let nome = Date.now() + "_" + file.name.replace(/\s/g, "_");
+
+  let res = await fetch(`${SUPABASE_URL}/storage/v1/object/midias/${nome}`, {
+    method: "POST",
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Authorization": "Bearer " + SUPABASE_KEY,
+      "Content-Type": file.type
+    },
+    body: file
+  });
+
+  if(!res.ok){
+    console.error(await res.text());
+    throw new Error("Erro upload");
+  }
+
+  return `${SUPABASE_URL}/storage/v1/object/public/midias/${nome}`;
+}
+
+
+/* MODAL */
+function modalImg(src){
+  modal.style.display="flex";
+  modal.innerHTML=`<img src="${src}">`;
+}
+function fecharModal(){ modal.style.display="none"; }
+
+/* SAVE */
+function salvarDB(){
+  localStorage.setItem("db", JSON.stringify(banco));
+}
+
+/* EXCEL */
+excel.onchange=e=>{
+  let r=new FileReader();
+
+  r.onload=ev=>{
+    let wb=XLSX.read(new Uint8Array(ev.target.result),{type:"array"});
+
+    banco[tipoAtual]={};
+
+    wb.SheetNames.forEach(n=>{
+  let s=wb.Sheets[n];
+  let txt="";
+
+  for(let k in s){
+    if(k[0]=="!") continue;
+    if(s[k].v) txt+=s[k].v+"\n";
+  }
+
+  banco[tipoAtual][n]={
+    passos:txt.split("\n"),
+    midia:[]
+  };
+
+  // 🔥 SALVA CADA CLIENTE NO SUPABASE
+  salvarSupabase(n, tipoAtual, txt);
+
+});
+
+    salvarDB();
+    carregarLista();
+    alert("Excel carregado!");
+  };
+
+  r.readAsArrayBuffer(e.target.files[0]);
+};
+
+/* INIT */
+window.onload = () => {
+  carregarSupabase();
+};
+
+const SUPABASE_URL = "https://zyuvmbosepzpigyidyco.supabase.co";
+const SUPABASE_KEY = "sb_publishable_bH6fPto5aBTiNaOc7A3JGg_KSJEJkjx";
+
+async function salvarSupabase(nome, tipo, texto, midia = []){
+
+  console.log("Salvando no Supabase:", nome, midia);
+
+  let res = await fetch(`${SUPABASE_URL}/rest/v1/clientes`, {
+    method: "POST",
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Authorization": "Bearer " + SUPABASE_KEY,
+      "Content-Type": "application/json",
+      "Prefer": "resolution=merge-duplicates"
+    },
+    body: JSON.stringify({
+      nome: nome,
+      tipo: tipo,
+      descricao: texto,
+      midia: midia
+    })
+  });
+
+  console.log("📡 Status:", res.status);
+
+  if(!res.ok){
+    let erro = await res.text();
+    console.error("❌ Erro:", erro);
+  } else {
+    console.log("✅ Salvo com sucesso!");
+  }
+}
+
+async function carregarSupabase(){
+  console.log("Buscando dados do Supabase...");
+
+  let res = await fetch(`${SUPABASE_URL}/rest/v1/clientes`, {
+    headers:{
+      "apikey": SUPABASE_KEY,
+      "Authorization": "Bearer " + SUPABASE_KEY
+    }
+  });
+
+  let dados = await res.json();
+
+  console.log("Dados recebidos:", dados);
+
+  banco = { nacional:{}, comex:{} };
+
+  dados.forEach(item => {
+
+    let tipo = item.tipo || "nacional";
+
+    banco[tipo][item.nome] = {
+      passos: item.descricao ? item.descricao.split("\n") : [],
+      midia: item.midia || [] // 🔥 ESSA LINHA É A CHAVE
+    };
+
+  });
+
+  carregarLista();
+}
+
+
+</script>
+
+</body>
+</html>
