@@ -3,179 +3,422 @@
 <head>
 <meta charset="UTF-8">
 <title>Instrutivo SaaS</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
-body {
+*{box-sizing:border-box}
+
+body{
   margin:0;
-  font-family:'Segoe UI';
+  font-family:'Segoe UI', Arial, sans-serif;
   display:flex;
   background:#f4f6f9;
+  color:#1d2a39;
 }
 
 /* SIDEBAR */
-#menu {
-  width:240px;
+#menu{
+  width:272px;
+  min-width:272px;
   background:#0b2c52;
-  color:white;
+  color:#fff;
   height:100vh;
   display:flex;
   flex-direction:column;
-  padding:20px;
+  padding:20px 18px;
 }
 
-.logo {
+.logo{
   text-align:center;
-  margin-bottom:30px;
+  margin-bottom:26px;
 }
 
-.logo span {
+.logo h2{
+  margin:18px 0 4px;
+  font-size:24px;
+  font-weight:800;
+  letter-spacing:.5px;
+}
+
+.logo span{
   color:#ffd400;
   font-size:11px;
 }
 
 /* MENU */
-.menu-btn {
-  padding:12px;
-  border-radius:8px;
+.menu-btn{
+  padding:14px 14px;
+  border-radius:10px;
   margin-bottom:10px;
   cursor:pointer;
+  transition:.2s;
+  font-size:15px;
 }
-.menu-btn:hover {background:#144a85;}
+.menu-btn:hover{background:#144a85;}
 
-.active {
+.menu-btn.active{
   background:#144a85;
   position:relative;
 }
-.active::before {
+.menu-btn.active::before{
   content:"";
   position:absolute;
-  left:-20px;
+  left:-18px;
+  top:0;
   width:4px;
   height:100%;
   background:#ffd400;
+  border-radius:2px;
 }
 
+/* BUSCA */
+.cliente-tools{
+  position:relative;
+  margin:16px 0 10px;
+}
+
+.busca-linha{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+#busca{
+  flex:1;
+  min-width:0;
+  padding:10px 12px;
+  border:none;
+  outline:none;
+  border-radius:12px;
+  font-size:14px;
+  color:#1d2a39;
+}
+
+.acoes-topo{
+  position:relative;
+  flex:0 0 auto;
+}
+
+.btn-plus{
+  width:34px;
+  height:34px;
+  border:none;
+  border-radius:9px;
+  background:rgba(255,255,255,0.12);
+  color:white;
+  font-size:18px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.btn-plus:hover{
+  background:rgba(255,255,255,0.22);
+}
+
+.menu-acoes{
+  position:absolute;
+  top:42px;
+  right:0;
+  min-width:190px;
+  background:#ffffff;
+  border-radius:12px;
+  box-shadow:0 12px 30px rgba(0,0,0,.18);
+  overflow:hidden;
+  display:none;
+  z-index:50;
+  animation:fadeIn .15s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(-5px);}
+  to{opacity:1; transform:translateY(0);}
+}
+.menu-acoes.open{
+  display:block;
+}
+.card{
+  box-shadow:0 4px 12px rgba(0,0,0,0.04);
+}
+.acao-item{
+  width:100%;
+  display:block;
+  padding:12px 14px;
+  border:none;
+  background:#fff;
+  color:#0b2c52;
+  text-align:left;
+  font-size:14px;
+  cursor:pointer;
+  text-decoration:none;
+}
+.acao-item:hover{
+  background:#f2f6fb;
+}
+
+/* CLIENTES */
+#lista{
+  overflow-y:auto;
+  flex:1;
+  margin-top:8px;
+  padding-right:4px;
+}
+
+#lista::-webkit-scrollbar{
+  width:8px;
+}
+#lista::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.35);
+  border-radius:8px;
+}
+
+.item{
+  padding:12px 12px;
+  cursor:pointer;
+  border-radius:10px;
+  position:relative;
+  margin-bottom:6px;
+  transition:all .18s ease;
+  font-size:14px;
+}
+
+.item:hover{
+  background:rgba(255,255,255,0.08);
+  transform:translateX(3px);
+}
+
+.item.active{
+  background:#144a85;
+}
+
+.item.active::before{
+  content:"";
+  position:absolute;
+  left:-10px;
+  top:15%;
+  height:70%;
+  width:4px;
+  background:#ffd400;
+  border-radius:2px;
+}
+
+#lista::-webkit-scrollbar{
+  width:6px;
+}
+
+#lista::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.25);
+  border-radius:10px;
+}
+
+#lista::-webkit-scrollbar-track{
+  background:transparent;
+}
 /* MAIN */
-#main {
+#main{
   flex:1;
   display:flex;
   flex-direction:column;
+  min-width:0;
 }
 
-header {
-  height:60px;
-  background:white;
+header{
+  min-height:76px;
+  background:#fff;
   display:flex;
   justify-content:space-between;
   align-items:center;
   padding:0 20px;
   border-bottom:1px solid #ddd;
+  gap:12px;
+}
+
+header h3{
+  margin:0;
+  font-size:22px;
+  font-weight:800;
+  color:#000;
 }
 
 /* CONTEÚDO */
-#conteudo {
+#conteudo{
   display:flex;
   gap:20px;
   padding:20px;
+  min-height:0;
 }
 
-.card {
-  background:white;
-  padding:20px;
-  border-radius:10px;
-  flex:2;
+.card{
+  background:#fff;
+  padding:18px;
+  border-radius:14px;
+  flex:1;
+  min-width:0;
+  box-shadow:0 2px 8px rgba(15,33,62,.04);
 }
 
-.side {
-  width:300px;
+.side{
+  width:320px;
+  min-width:320px;
 }
 
-.midia-box {
+.midia-box{
   background:#0b2c52;
-  color:white;
-  padding:15px;
-  border-radius:10px;
+  color:#fff;
+  padding:16px;
+  border-radius:14px;
+  min-height:290px;
+}
+
+.midia-box h3{
+  margin:2px 0 16px;
+  font-size:20px;
 }
 
 /* BOTÕES */
-.btn {
-  padding:6px 10px;
+.btn{
+  padding:8px 12px;
   border:none;
-  border-radius:6px;
+  border-radius:8px;
   background:#144a85;
-  color:white;
+  color:#fff;
   cursor:pointer;
   margin-right:5px;
+  font-size:14px;
+  transition:.2s;
+}
+.btn:hover{
+  background:#1b5fae;
 }
 
-/* CLIENTES */
-#lista {
-  overflow-y:auto;
-  flex:1;
-  margin-top:10px;
-}
-
-.item {
-  padding:10px;
-  cursor:pointer;
+.btn-mini{
+  padding:4px 8px;
+  font-size:11px;
   border-radius:6px;
-  position:relative;
+  background:rgba(20,74,133,0.15);
+  color:#144a85;
 }
-.item:hover {background:#144a85;}
+header h3{
+  letter-spacing:0.3px;
+}
 
-.item.active {
+.btn-mini:hover{
   background:#144a85;
+  color:white;
 }
-.item.active::before {
-  content:"";
-  position:absolute;
-  left:-15px;
-  top:10%;
-  height:80%;
-  width:4px;
-  background:#ffd400;
+
+.topo-editor{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  margin-bottom:12px;
+  flex-wrap:wrap;
+}
+
+.youtube-box{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.youtube-box input{
+  width:280px;
+  max-width:100%;
+  padding:10px 12px;
+  border:1px solid #d7deea;
+  border-radius:10px;
+  outline:none;
+  font-size:14px;
+}
+
+.hidden{
+  display:none !important;
 }
 
 /* TEXTAREA */
-textarea {
+textarea{
   width:100%;
-  height:300px;
-  margin-top:10px;
+  height:330px;
+  resize:vertical;
+  border:1px solid #e3e8ef;
+  border-radius:12px;
+  padding:14px;
+  font-size:15px;
+  transition:.2s;
+}
+
+textarea:focus{
+  border-color:#144a85;
+  box-shadow:0 0 0 2px rgba(20,74,133,0.1);
+}
+
+textarea:disabled{
+  background:#fafbfd;
+  color:#2a3340;
 }
 
 /* MIDIA */
-.midia-item {
-  position:relative;
+.midia-card{
+  background:#ffffff;
+  border-radius:14px;
+  padding:10px;
+  margin-top:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.05);
 }
-.midia img {
+
+.midia-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin-bottom:8px;
+}
+
+.midia-acoes{
+  display:flex;
+  gap:6px;
+}
+
+.link-video{
+  font-size:11px;
+  color:#c8d8ef;
+  opacity:.82;
+}
+
+.youtube-wrap{
+  position:relative;
   width:100%;
-  margin-top:10px;
+  padding-top:56.25%;
+  border-radius:10px;
+  overflow:hidden;
+  background:#000;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+}
+
+.youtube-wrap iframe{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:0;
+}
+
+.img-wrap img{
+  width:100%;
+  border-radius:10px;
+  display:block;
   cursor:pointer;
 }
 
-/* REMOVER */
-.remover {
-  position:absolute;
-  top:5px;
-  right:5px;
-  background:rgba(0,0,0,0.5);
-  color:white;
-  border:none;
-  border-radius:50%;
-  width:20px;
-  height:20px;
-  cursor:pointer;
-  opacity:0;
-  transition:0.2s;
-}
-.midia-item:hover .remover {
-  opacity:1;
+.sem-midia{
+  font-size:13px;
+  color:#dbe7f7;
+  opacity:.9;
 }
 
 /* MODAL */
-#modal {
+#modal{
   position:fixed;
   top:0; left:0;
   width:100%;
@@ -184,16 +427,44 @@ textarea {
   justify-content:center;
   align-items:center;
   background:rgba(0,0,0,0.8);
+  z-index:999;
 }
-#modal img {max-width:90%;}
+#modal img{
+  max-width:90%;
+  max-height:90%;
+  border-radius:12px;
+}
+
+/* RESPONSIVO */
+@media (max-width: 1100px){
+  #conteudo{
+    flex-direction:column;
+  }
+  .side{
+    width:100%;
+    min-width:0;
+  }
+}
+
+@media (max-width: 820px){
+  body{
+    flex-direction:column;
+  }
+  #menu{
+    width:100%;
+    min-width:0;
+    height:auto;
+  }
+  header{
+    padding:14px 16px;
+  }
+}
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 <div id="menu">
-
   <div class="logo">
     <h2>MARVEL</h2>
     <span>TRANSPORTES</span>
@@ -207,384 +478,510 @@ textarea {
     Instrutivo Comex
   </div>
 
-  <hr>
+  <div class="cliente-tools">
+    <div class="busca-linha">
+      <input type="text" id="busca" placeholder="Buscar cliente">
 
-  <input type="text" id="busca" placeholder="Buscar cliente">
-  <input type="file" id="excel">
-  <button class="btn" onclick="novoCliente()">+ Cliente</button>
+      <div class="acoes-topo">
+        <button class="btn-plus" onclick="toggleAcoes()">+</button>
+
+        <div id="menuAcoes" class="menu-acoes">
+          <label for="excel" class="acao-item">📂 Importar Excel</label>
+          <button class="acao-item" onclick="novoCliente()">➕ Novo cliente</button>
+        </div>
+      </div>
+    </div>
+
+    <input type="file" id="excel" accept=".xlsx,.xls" style="display:none">
+  </div>
 
   <div id="lista"></div>
 </div>
 
-<!-- MAIN -->
 <div id="main">
+  <header>
+    <h3 id="titulo">Nenhum cliente</h3>
+    <div>
+      <button class="btn" onclick="editarNome()">Editar Nome</button>
+      <button class="btn" onclick="excluirCliente()">Excluir</button>
+    </div>
+  </header>
 
-<header>
-  <h3 id="titulo">Nenhum cliente</h3>
-  <div>
-    <button class="btn" onclick="editarNome()">Editar Nome</button>
-    <button class="btn" onclick="excluir()">Excluir</button>
-  </div>
-</header>
+  <div id="conteudo">
+    <div class="card">
+      <div class="topo-editor">
+        <button class="btn" onclick="toggleEdicao()" id="btnEditar">✏️ Editar</button>
 
-<div id="conteudo">
+        <div id="youtubeBox" class="youtube-box hidden">
+          <input type="text" id="youtubeLink" placeholder="Cole aqui o link do YouTube">
+          <button class="btn" onclick="adicionarYoutube()">Salvar vídeo</button>
+        </div>
+      </div>
 
-  <div class="card">
-    <button class="btn" onclick="toggleEdicao()" id="btnEditar">✏️ Editar</button>
-    <button class="btn" onclick="upload()">📎 Mídia</button>
+      <textarea id="editor" disabled></textarea>
+    </div>
 
-    <textarea id="editor" disabled></textarea>
-    <input type="file" id="fileInput" style="display:none">
-  </div>
-
-  <div class="side">
-    <div class="midia-box">
-      <h3>Mídia</h3>
-      <div id="midias" class="midia"></div>
+    <div class="side">
+      <div class="midia-box">
+        <h3>Mídia</h3>
+        <div id="midias"></div>
+      </div>
     </div>
   </div>
-
-</div>
-
 </div>
 
 <div id="modal" onclick="fecharModal()"></div>
 
-
-
-
-
 <script>
+const SUPABASE_URL = "https://zyuvmbosepzpigyidyco.supabase.co";
+const SUPABASE_KEY = "sb_publishable_bH6fPto5aBTiNaOc7A3JGg_KSJEJkjx";
 
 let banco = JSON.parse(localStorage.getItem("db")) || {
   nacional:{},
   comex:{}
 };
 
-let tipoAtual="nacional";
-let atual=null;
-let editando=false;
+let tipoAtual = "nacional";
+let atual = null;
+let editando = false;
 
-/* TROCAR ABA */
+const tituloEl = document.getElementById("titulo");
+const editorEl = document.getElementById("editor");
+const listaEl = document.getElementById("lista");
+const buscaEl = document.getElementById("busca");
+const midiasEl = document.getElementById("midias");
+const modalEl = document.getElementById("modal");
+const youtubeBoxEl = document.getElementById("youtubeBox");
+const youtubeLinkEl = document.getElementById("youtubeLink");
+const btnEditarEl = document.getElementById("btnEditar");
+const excelInputEl = document.getElementById("excel");
+
+function toggleAcoes(){
+  document.getElementById("menuAcoes").classList.toggle("open");
+}
+
+document.addEventListener("click", function(e){
+  const menu = document.getElementById("menuAcoes");
+  const botao = document.querySelector(".btn-plus");
+  if(!menu || !botao) return;
+
+  if(!menu.contains(e.target) && !botao.contains(e.target)){
+    menu.classList.remove("open");
+  }
+});
+
 function trocarTipo(tipo, el){
   tipoAtual = tipo;
   atual = null;
+  editando = false;
 
-  document.querySelectorAll(".menu-btn").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".menu-btn").forEach(b => b.classList.remove("active"));
   el.classList.add("active");
 
-  // limpa tela
-  titulo.innerText = "Nenhum cliente";
-  editor.value = "";
-  midias.innerHTML = "";
+  tituloEl.innerText = "Nenhum cliente";
+  editorEl.value = "";
+  editorEl.disabled = true;
+  btnEditarEl.innerText = "✏️ Editar";
+  youtubeBoxEl.classList.add("hidden");
+  midiasEl.innerHTML = "";
 
   carregarLista();
 }
 
-/* LISTA */
 function carregarLista(){
-  lista.innerHTML="";
+  listaEl.innerHTML = "";
 
-  Object.keys(banco[tipoAtual])
-  .filter(n=>n.toLowerCase().includes(busca.value.toLowerCase()))
-  .forEach(n=>{
-    let d=document.createElement("div");
-    d.className="item";
-    d.innerText=n;
-    d.onclick=()=>abrir(n);
-    lista.appendChild(d);
-  });
+  Object.keys(banco[tipoAtual] || {})
+    .sort((a,b)=>a.localeCompare(b,'pt-BR'))
+    .filter(n => n.toLowerCase().includes(buscaEl.value.toLowerCase()))
+    .forEach(n => {
+      let d = document.createElement("div");
+      d.className = "item" + (atual === n ? " active" : "");
+      d.innerText = n;
+      d.onclick = () => abrirCliente(n);
+      listaEl.appendChild(d);
+    });
 }
 
-busca.oninput=()=>carregarLista();
+buscaEl.oninput = () => carregarLista();
 
-/* ABRIR */
-function abrir(n){
-  atual=n;
-  titulo.innerText=n;
+function abrirCliente(nome){
+  atual = nome;
+  editando = false;
 
-  editor.value=banco[tipoAtual][n].passos.join("\n");
+  tituloEl.innerText = nome;
+  editorEl.value = (banco[tipoAtual][nome].passos || []).join("\n");
+  editorEl.disabled = true;
+  btnEditarEl.innerText = "✏️ Editar";
+  youtubeBoxEl.classList.add("hidden");
 
-  document.querySelectorAll(".item").forEach(i=>i.classList.remove("active"));
-  [...lista.children].forEach(el=>{
-    if(el.innerText===n) el.classList.add("active");
-  });
+  carregarLista();
+  carregarMidias();
+}
+
+function toggleEdicao(){
+  if(!atual){
+    alert("Selecione um cliente primeiro.");
+    return;
+  }
+
+  editando = !editando;
+  editorEl.disabled = !editando;
+
+  if(editando){
+    btnEditarEl.innerText = "💾 Salvar texto";
+    youtubeBoxEl.classList.remove("hidden");
+  } else {
+    banco[tipoAtual][atual].passos = editorEl.value.split("\n");
+    salvarDB();
+    salvarSupabase(
+      atual,
+      tipoAtual,
+      editorEl.value,
+      banco[tipoAtual][atual].midia || []
+    );
+
+    btnEditarEl.innerText = "✏️ Editar";
+    youtubeBoxEl.classList.add("hidden");
+  }
 
   carregarMidias();
 }
 
-/* EDITAR */
-function toggleEdicao(){
-  if(!atual) return;
-
-  editando=!editando;
-  editor.disabled=!editando;
-
-  const btn=document.getElementById("btnEditar");
-
-  if(editando){
-    btn.innerText="💾 Salvar";
-  } else {
-    banco[tipoAtual][atual].passos = editor.value.split("\n");
-salvarDB();
-salvarSupabase(
-  atual,
-  tipoAtual,
-  editor.value,
-  banco[tipoAtual][atual].midia
-);
-    btn.innerText="✏️ Editar";
-  }
-}
-
-/* CLIENTE */
 function novoCliente(){
-  let n=prompt("Nome:");
+  let n = prompt("Nome:");
   if(!n) return;
 
-  banco[tipoAtual][n]={passos:[],midia:[]};
+  n = n.trim();
+  if(!n) return;
+
+  if(!banco[tipoAtual]) banco[tipoAtual] = {};
+
+  if(banco[tipoAtual][n]){
+    alert("Esse cliente já existe.");
+    return;
+  }
+
+  banco[tipoAtual][n] = { passos: [], midia: [] };
+
   salvarDB();
+  salvarSupabase(n, tipoAtual, "", []);
+
   carregarLista();
+  abrirCliente(n);
 }
 
 function editarNome(){
-  if(!atual) return;
+  if(!atual){
+    alert("Selecione um cliente primeiro.");
+    return;
+  }
 
-  let n=prompt("Novo nome:", atual);
+  let n = prompt("Novo nome:", atual);
   if(!n) return;
 
-  banco[tipoAtual][n]=banco[tipoAtual][atual];
+  n = n.trim();
+  if(!n || n === atual) return;
+
+  if(banco[tipoAtual][n]){
+    alert("Já existe um cliente com esse nome.");
+    return;
+  }
+
+  banco[tipoAtual][n] = banco[tipoAtual][atual];
   delete banco[tipoAtual][atual];
 
-  atual=n;
+  atual = n;
   salvarDB();
+
+  salvarSupabase(
+    n,
+    tipoAtual,
+    (banco[tipoAtual][n].passos || []).join("\n"),
+    banco[tipoAtual][n].midia || []
+  );
+
   carregarLista();
-  abrir(n);
+  abrirCliente(n);
 }
 
-function excluir(){
+function excluirCliente(){
+  if(!atual){
+    alert("Selecione um cliente primeiro.");
+    return;
+  }
+
   if(!confirm("Excluir cliente?")) return;
 
   delete banco[tipoAtual][atual];
   salvarDB();
+
+  atual = null;
+  tituloEl.innerText = "Nenhum cliente";
+  editorEl.value = "";
+  midiasEl.innerHTML = "";
+  editorEl.disabled = true;
+  btnEditarEl.innerText = "✏️ Editar";
+  youtubeBoxEl.classList.add("hidden");
+
   carregarLista();
 }
 
-/* MIDIA */
-function upload(){ fileInput.click(); }
-
-fileInput.onchange=async e=>{
-  let f=e.target.files[0];
- if(!f) return;
+function normalizarYoutube(url){
+  if(!url) return "";
+  url = url.trim();
 
   try{
-  let url = await uploadSupabase(f);
+    const u = new URL(url);
 
-  banco[tipoAtual][atual].midia.push(url);
+    if(u.hostname.includes("youtu.be")){
+      const id = u.pathname.replaceAll("/", "").trim();
+      return id ? `https://www.youtube.com/embed/${id}` : "";
+    }
+
+    if(u.hostname.includes("youtube.com")){
+      if(u.pathname === "/watch"){
+        const id = u.searchParams.get("v");
+        return id ? `https://www.youtube.com/embed/${id}` : "";
+      }
+
+      if(u.pathname.startsWith("/embed/")){
+        const partes = u.pathname.split("/").filter(Boolean);
+        const id = partes[1] || "";
+        return id ? `https://www.youtube.com/embed/${id}` : "";
+      }
+
+      if(u.pathname.startsWith("/shorts/")){
+        const partes = u.pathname.split("/").filter(Boolean);
+        const id = partes[1] || "";
+        return id ? `https://www.youtube.com/embed/${id}` : "";
+      }
+    }
+
+    return "";
+  }catch(e){
+    return "";
+  }
+}
+
+function adicionarYoutube(){
+  if(!atual){
+    alert("Selecione um cliente primeiro.");
+    return;
+  }
+
+  const embed = normalizarYoutube(youtubeLinkEl.value);
+
+  if(!embed){
+    alert("Cole um link válido do YouTube.");
+    return;
+  }
+
+  if(!Array.isArray(banco[tipoAtual][atual].midia)){
+    banco[tipoAtual][atual].midia = [];
+  }
+
+  banco[tipoAtual][atual].midia.push(embed);
 
   salvarDB();
   salvarSupabase(
     atual,
     tipoAtual,
-    banco[tipoAtual][atual].passos.join("\n"),
+    editorEl.value,
     banco[tipoAtual][atual].midia
   );
 
+  youtubeLinkEl.value = "";
   carregarMidias();
-
-}catch(e){
-  alert("Erro ao enviar mídia");
-  console.error(e);
 }
-};
 
 function carregarMidias(){
-  midias.innerHTML = "";
+  midiasEl.innerHTML = "";
 
-  let lista = banco[tipoAtual][atual]?.midia || [];
+  if(!atual){
+    midiasEl.innerHTML = `<div class="sem-midia">Selecione um cliente para visualizar a mídia.</div>`;
+    return;
+  }
 
-  lista.forEach((src, i) => {
+  let listaMidia = banco[tipoAtual][atual]?.midia || [];
 
+  if(!listaMidia.length){
+    midiasEl.innerHTML = `<div class="sem-midia">Nenhuma mídia cadastrada.</div>`;
+    return;
+  }
+
+  listaMidia.forEach((src, i) => {
     if(!src) return;
 
-    let html = "";
+    let botaoExcluir = editando
+      ? `<button class="btn btn-mini" onclick="removerMidia(${i})">Excluir</button>`
+      : "";
 
-    if(src.includes(".mp4")){
-      html = `
-        <video controls style="max-width: 250px;">
-          <source src="${src}" type="video/mp4">
-        </video>
+    if(src.includes("youtube.com/embed/")){
+      midiasEl.innerHTML += `
+        <div class="midia-card">
+          <div class="midia-header">
+            <span class="link-video">Vídeo do YouTube</span>
+            <div class="midia-acoes">${botaoExcluir}</div>
+          </div>
+          <div class="youtube-wrap">
+            <iframe
+              src="${src}"
+              title="Vídeo do cliente"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </div>
       `;
-    }else{
-      html = `<img src="${src}" style="max-width:150px;">`;
+    } else {
+      midiasEl.innerHTML += `
+        <div class="midia-card">
+          <div class="midia-header">
+            <span class="link-video">Imagem</span>
+            <div class="midia-acoes">${botaoExcluir}</div>
+          </div>
+          <div class="img-wrap">
+            <img src="${src}" onclick="modalImg('${src.replace(/'/g, "\\'")}')">
+          </div>
+        </div>
+      `;
     }
-
-    midias.innerHTML += `
-      <div style="margin-bottom:10px;">
-        ${html}
-        <br>
-        <button onclick="removerMidia(${i})">❌ Excluir</button>
-      </div>
-    `;
   });
 }
 
 function removerMidia(index){
+  if(!atual) return;
 
   banco[tipoAtual][atual].midia.splice(index, 1);
 
   salvarDB();
-
   salvarSupabase(
     atual,
     tipoAtual,
-    banco[tipoAtual][atual].passos.join("\n"),
+    editorEl.value,
     banco[tipoAtual][atual].midia
   );
 
   carregarMidias();
 }
 
-
-async function uploadSupabase(file){
-  let nome = Date.now() + "_" + file.name.replace(/\s/g, "_");
-
-  let res = await fetch(`${SUPABASE_URL}/storage/v1/object/midias/${nome}`, {
-    method: "POST",
-    headers: {
-      "apikey": SUPABASE_KEY,
-      "Authorization": "Bearer " + SUPABASE_KEY,
-      "Content-Type": file.type
-    },
-    body: file
-  });
-
-  if(!res.ok){
-    console.error(await res.text());
-    throw new Error("Erro upload");
-  }
-
-  return `${SUPABASE_URL}/storage/v1/object/public/midias/${nome}`;
-}
-
-
-/* MODAL */
 function modalImg(src){
-  modal.style.display="flex";
-  modal.innerHTML=`<img src="${src}">`;
+  modalEl.style.display = "flex";
+  modalEl.innerHTML = `<img src="${src}">`;
 }
-function fecharModal(){ modal.style.display="none"; }
 
-/* SAVE */
+function fecharModal(){
+  modalEl.style.display = "none";
+  modalEl.innerHTML = "";
+}
+
 function salvarDB(){
   localStorage.setItem("db", JSON.stringify(banco));
 }
 
-/* EXCEL */
-excel.onchange=e=>{
-  let r=new FileReader();
+excelInputEl.onchange = e => {
+  const arquivo = e.target.files[0];
+  if(!arquivo) return;
 
-  r.onload=ev=>{
-    let wb=XLSX.read(new Uint8Array(ev.target.result),{type:"array"});
+  let r = new FileReader();
 
-    banco[tipoAtual]={};
+  r.onload = ev => {
+    let wb = XLSX.read(new Uint8Array(ev.target.result), { type:"array" });
 
-    wb.SheetNames.forEach(n=>{
-  let s=wb.Sheets[n];
-  let txt="";
+    banco[tipoAtual] = {};
 
-  for(let k in s){
-    if(k[0]=="!") continue;
-    if(s[k].v) txt+=s[k].v+"\n";
-  }
+    wb.SheetNames.forEach(nomeAba => {
+      let s = wb.Sheets[nomeAba];
+      let txt = "";
 
-  banco[tipoAtual][n]={
-    passos:txt.split("\n"),
-    midia:[]
-  };
+      for(let k in s){
+        if(k[0] === "!") continue;
+        if(s[k] && s[k].v !== undefined && s[k].v !== null){
+          txt += s[k].v + "\n";
+        }
+      }
 
-  // 🔥 SALVA CADA CLIENTE NO SUPABASE
-  salvarSupabase(n, tipoAtual, txt);
+      banco[tipoAtual][nomeAba] = {
+        passos: txt.split("\n"),
+        midia: []
+      };
 
-});
+      salvarSupabase(nomeAba, tipoAtual, txt, []);
+    });
 
     salvarDB();
     carregarLista();
     alert("Excel carregado!");
+    e.target.value = "";
   };
 
-  r.readAsArrayBuffer(e.target.files[0]);
+  r.readAsArrayBuffer(arquivo);
 };
-
-/* INIT */
-window.onload = () => {
-  carregarSupabase();
-};
-
-const SUPABASE_URL = "https://zyuvmbosepzpigyidyco.supabase.co";
-const SUPABASE_KEY = "sb_publishable_bH6fPto5aBTiNaOc7A3JGg_KSJEJkjx";
 
 async function salvarSupabase(nome, tipo, texto, midia = []){
+  try{
+    let res = await fetch(`${SUPABASE_URL}/rest/v1/clientes`, {
+      method: "POST",
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + SUPABASE_KEY,
+        "Content-Type": "application/json",
+        "Prefer": "resolution=merge-duplicates"
+      },
+      body: JSON.stringify({
+        nome: nome,
+        tipo: tipo,
+        descricao: texto,
+        midia: midia
+      })
+    });
 
-  console.log("Salvando no Supabase:", nome, midia);
-
-  let res = await fetch(`${SUPABASE_URL}/rest/v1/clientes`, {
-    method: "POST",
-    headers: {
-      "apikey": SUPABASE_KEY,
-      "Authorization": "Bearer " + SUPABASE_KEY,
-      "Content-Type": "application/json",
-      "Prefer": "resolution=merge-duplicates"
-    },
-    body: JSON.stringify({
-      nome: nome,
-      tipo: tipo,
-      descricao: texto,
-      midia: midia
-    })
-  });
-
-  console.log("📡 Status:", res.status);
-
-  if(!res.ok){
-    let erro = await res.text();
-    console.error("❌ Erro:", erro);
-  } else {
-    console.log("✅ Salvo com sucesso!");
+    if(!res.ok){
+      let erro = await res.text();
+      console.error("Erro Supabase:", erro);
+    }
+  }catch(e){
+    console.error("Erro ao salvar no Supabase:", e);
   }
 }
 
 async function carregarSupabase(){
-  console.log("Buscando dados do Supabase...");
+  try{
+    let res = await fetch(`${SUPABASE_URL}/rest/v1/clientes`, {
+      headers:{
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + SUPABASE_KEY
+      }
+    });
 
-  let res = await fetch(`${SUPABASE_URL}/rest/v1/clientes`, {
-    headers:{
-      "apikey": SUPABASE_KEY,
-      "Authorization": "Bearer " + SUPABASE_KEY
-    }
-  });
+    let dados = await res.json();
 
-  let dados = await res.json();
+    banco = { nacional:{}, comex:{} };
 
-  console.log("Dados recebidos:", dados);
+    (dados || []).forEach(item => {
+      let tipo = item.tipo || "nacional";
 
-  banco = { nacional:{}, comex:{} };
+      if(!banco[tipo]) banco[tipo] = {};
 
-  dados.forEach(item => {
+      banco[tipo][item.nome] = {
+        passos: item.descricao ? item.descricao.split("\n") : [],
+        midia: Array.isArray(item.midia) ? item.midia : []
+      };
+    });
 
-    let tipo = item.tipo || "nacional";
-
-    banco[tipo][item.nome] = {
-      passos: item.descricao ? item.descricao.split("\n") : [],
-      midia: item.midia || [] // 🔥 ESSA LINHA É A CHAVE
-    };
-
-  });
-
-  carregarLista();
+    salvarDB();
+    carregarLista();
+  }catch(e){
+    console.error("Erro ao carregar Supabase:", e);
+    carregarLista();
+  }
 }
 
-
+window.onload = () => {
+  carregarSupabase();
+};
 </script>
 
 </body>
