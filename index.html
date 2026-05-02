@@ -931,8 +931,10 @@ excelInputEl.onchange = e => {
 };
 
 async function salvarSupabase(nome, tipo, texto, midia = []){
+  const tipoFinal = String(tipo || tipoAtual || "nacional").trim().toLowerCase();
+
   try{
-    let res = await fetch(`${SUPABASE_URL}/rest/v1/clientes`, {
+    let res = await fetch(`${SUPABASE_URL}/rest/v1/clientes?on_conflict=nome,tipo`, {
       method: "POST",
       headers: {
         "apikey": SUPABASE_KEY,
@@ -942,9 +944,9 @@ async function salvarSupabase(nome, tipo, texto, midia = []){
       },
       body: JSON.stringify({
         nome: nome,
-        tipo: tipo,
-        descricao: texto,
-        midia: midia
+        tipo: tipoFinal,
+        descricao: texto || "",
+        midia: Array.isArray(midia) ? midia : []
       })
     });
 
@@ -959,7 +961,7 @@ async function salvarSupabase(nome, tipo, texto, midia = []){
 
 async function carregarSupabase(){
   try{
-    let res = await fetch(`${SUPABASE_URL}/rest/v1/clientes`, {
+    let res = await fetch(`${SUPABASE_URL}/rest/v1/clientes?on_conflict=nome,tipo`, {
       headers:{
         "apikey": SUPABASE_KEY,
         "Authorization": "Bearer " + SUPABASE_KEY
