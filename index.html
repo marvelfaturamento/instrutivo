@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0087)https://instrutivo-21ko.vercel.app/?perfil=admin&usuario=Tiago&usuarioRef=tiago.carniel -->
+<html lang="pt-br"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <title>Instrutivo SaaS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
@@ -478,6 +478,10 @@ textarea:disabled{
     Instrutivo Comex
   </div>
 
+  <div class="menu-btn" onclick="trocarTipo('complementos', this)">
+    Instrutivo Complementos
+  </div>
+
   <div class="cliente-tools">
     <div class="busca-linha">
       <input type="text" id="busca" placeholder="Buscar cliente">
@@ -518,7 +522,7 @@ textarea:disabled{
         </div>
       </div>
 
-      <textarea id="editor" disabled></textarea>
+      <textarea id="editor" disabled=""></textarea>
     </div>
 
     <div class="side">
@@ -538,12 +542,18 @@ const SUPABASE_KEY = "sb_publishable_bH6fPto5aBTiNaOc7A3JGg_KSJEJkjx";
 
 let banco = JSON.parse(localStorage.getItem("db")) || {
   nacional:{},
-  comex:{}
+  comex:{},
+  complementos:{}
 };
 
 let tipoAtual = "nacional";
 let atual = null;
 let editando = false;
+
+// garante compatibilidade com dados antigos do navegador
+if(!banco.nacional) banco.nacional = {};
+if(!banco.comex) banco.comex = {};
+if(!banco.complementos) banco.complementos = {};
 
 const tituloEl = document.getElementById("titulo");
 const editorEl = document.getElementById("editor");
@@ -958,7 +968,7 @@ async function carregarSupabase(){
 
     let dados = await res.json();
 
-    banco = { nacional:{}, comex:{} };
+    banco = { nacional:{}, comex:{}, complementos:{} };
 
     (dados || []).forEach(item => {
       let tipo = item.tipo || "nacional";
@@ -984,5 +994,6 @@ window.onload = () => {
 };
 </script>
 
-</body>
-</html>
+
+
+</body></html>
